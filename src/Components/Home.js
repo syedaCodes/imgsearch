@@ -1,27 +1,29 @@
 import React from 'react';
-import Svg from '../assets/sprite.svg';
+import unsplash from '../api/unsplash';
+import Search from './Search';
+import ImageList from './ImageList';
 
-const Home = () => {
-    return (
-        <>
-            <h1 className="heading">Image Search</h1>
+class Home extends React.Component {
 
-            <div className="search">
-                <input className="search__input" type="text" placeholder="Find Image" />
-                <button className="search__btn">
-                    <svg className="search__svg">
-                        <use xlinkHref={`${Svg}#icon-search`}></use>
-                    </svg>
-                </button>
-            </div>
+    state = { images: [] };
 
-            <div className="catalogue">
-                <div className="imageCard">
-                    <img src="" alt="" />
-                </div>
-            </div>
-        </>
-    )
+    onSearchSubmit = async inputText => {
+        const response = await unsplash.get('https://api.unsplash.com/search/photos', {
+            params: { query: inputText }
+        });
+
+        this.setState({ images: response.data.results });
+    }
+    
+    render(){
+        return (
+            <>
+                <h1 className="heading">Image Search</h1>
+                <Search onRender={this.onSearchSubmit} />
+                <ImageList images={this.state.images}/> 
+            </>
+        );
+    }
 }
 
 export default Home;
